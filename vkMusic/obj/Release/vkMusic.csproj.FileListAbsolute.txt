@@ -1,0 +1,17 @@
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\bin\Release\vkMusic.exe.config
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\bin\Release\vkMusic.exe
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\bin\Release\vkMusic.pdb
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\MainWindow.baml
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\waiting.baml
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\MainWindow.g.cs
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\waiting.g.cs
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\App.g.cs
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\vkMusic_MarkupCompile.cache
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\vkMusic.g.resources
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\vkMusic.Properties.Resources.resources
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\vkMusic.csproj.GenerateResource.Cache
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\vkMusic.exe
+C:\Users\Sveta\documents\visual studio 2013\Projects\vkMusic\vkMusic\obj\Release\vkMusic.pdb
+C:\vkMusic\vkMusic\vkMusic\vkMusic\bin\Release\vkMusic.exe.config
+C:\vkMusic\vkMusic\vkMusic\vkMusic\obj\Release\vkMusic.exe
+C:\vkMusic\vkMusic\vkMusic\vkMusic\obj\Release\vkMusic.pdb
