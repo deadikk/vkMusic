@@ -13,3 +13,18 @@ C:\Users\Sveta\Documents\Visual Studio 2013\Projects\vkMusic\vkMusic\obj\Debug\v
 C:\Users\Sveta\Documents\Visual Studio 2013\Projects\vkMusic\vkMusic\obj\Debug\vkMusic.pdb
 C:\Users\Sveta\Documents\Visual Studio 2013\Projects\vkMusic\vkMusic\obj\Debug\waiting.baml
 C:\Users\Sveta\Documents\Visual Studio 2013\Projects\vkMusic\vkMusic\obj\Debug\waiting.g.cs
+D:\Projects\My\vkMusic\vkMusic\bin\Debug\vkMusic.exe.config
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\vkMusic.exe
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\vkMusic.pdb
+D:\Projects\My\vkMusic\vkMusic\bin\Debug\vkMusic.exe
+D:\Projects\My\vkMusic\vkMusic\bin\Debug\vkMusic.pdb
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\vkMusic.csprojResolveAssemblyReference.cache
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\MainWindow.baml
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\waiting.baml
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\MainWindow.g.cs
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\waiting.g.cs
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\App.g.cs
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\vkMusic_MarkupCompile.cache
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\vkMusic.g.resources
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\vkMusic.Properties.Resources.resources
+D:\Projects\My\vkMusic\vkMusic\obj\Debug\vkMusic.csproj.GenerateResource.Cache

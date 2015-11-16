@@ -98,7 +98,7 @@ namespace vkMusic
             string all;
             data.Default.currentId=id;
             songs = Core.getMusic(id, data.Default.currentOffset, data.Default.count, out all);
-            songsCountLbl.Content = string.Format("Песни: {0} - {1} из {2}",data.Default.currentOffset,data.Default.count,all);
+            songsCountLbl.Content = string.Format("Песни: {0} - {1} из {2}",data.Default.currentOffset, data.Default.currentOffset + data.Default.count,all);
             generateSongInView(songs);
 
         }
@@ -123,8 +123,10 @@ namespace vkMusic
 
                 btnPlay.Tag = s.url;
                 btnPlay.Click += btnPlay_Click;
-                btnPlay.Content = "Play";
-               
+                btnPlay.Content = "▷";
+                btnPlay.FontSize = 20;
+                            
+
                 
                 btn.Content = "Скачать";
                 btn.ToolTip = string.Format("{2}\\{0} - {1}.mp3", s.Artist, s.Name, data.Default.path);
@@ -134,9 +136,11 @@ namespace vkMusic
 
                 btn.Click += btn_Click;
                 btn.Tag = s;
-
+                
                 btnBuff.Click += btnBuff_Click;
                 btnBuff.Tag = s;
+
+               
 
                 RowDefinition r = new RowDefinition();
                 r.Height = new GridLength(30);
@@ -154,13 +158,13 @@ namespace vkMusic
 
                 gridRight.RowDefinitions.Add(r);
 
-
+                lbl.Background = Brushes.LightGray;
 
                 gridRight.Children.Add(btn);
                 gridRight.Children.Add(btnBuff);
                 gridRight.Children.Add(lbl);
                 gridRight.Children.Add(btnPlay);
-
+                
 
 
                 counter++;
@@ -168,29 +172,58 @@ namespace vkMusic
             }
 
         }
-
-        Button lastPushed;
+        
 
         void btnPlay_Click(object sender, RoutedEventArgs e)
         {
-            if ((sender as Button).Content.ToString() == "Play")
+            List<Button> playButtons = new List<Button>();
+            List<Label> playLabels = new List<Label>();
+
+            for (int i = 0; i < songs.Count; i++)
             {
-                if (lastPushed != null) lastPushed.Content = "Play";
-                lastPushed = sender as Button;
+                playButtons.Add(gridRight.Children[i * 4 + 3] as Button);
+                playLabels.Add(gridRight.Children[i * 4 + 2] as Label);
+            }
+            int indexofButton = 0;
+
+            if ((sender as Button).Content.ToString() == "▷")
+            {
+
+                
+
+                foreach (Button playButton in playButtons)
+                {
+                    playButton.Content = "▷";
+                    if ((sender as Button) == playButton)
+                    {
+                        indexofButton = playButtons.IndexOf(playButton);
+                    }
+                }
+
+                foreach (Label playLabel in playLabels)
+                {
+                    playLabel.Background = Brushes.LightGray;
+                }
                 media.Stop();
                 media.Source = new Uri((sender as Button).Tag as String);
                 media.Play();
-                (sender as Button).Content = "Stop";
 
-                
+                (sender as Button).Content = "◻";
+                playLabels[indexofButton].Background = Brushes.LightGreen;
+
+
             }
 
             else {
                 media.Stop();
                 
-                (sender as Button).Content = "Play";
-                
-                
+                (sender as Button).Content = "▷";
+                foreach (Label playLabel in playLabels)
+                {
+                    playLabel.Background = Brushes.LightGray;
+                }
+
+
             }
         }
 
@@ -335,6 +368,24 @@ namespace vkMusic
         private void stopPlayer(object sender, RoutedEventArgs e)
         {
             media.Stop();
+            List<Button> playButtons = new List<Button>();
+            List<Label> playLabels = new List<Label>();
+
+            for (int i = 0; i < songs.Count; i++)
+            {
+                playButtons.Add(gridRight.Children[i * 4 + 3] as Button);
+                playLabels.Add(gridRight.Children[i * 4 + 2] as Label);
+            }
+
+            foreach (Button playButton in playButtons)
+            {
+                playButton.Content = "▷";
+            }
+
+            foreach (Label playLabel in playLabels)
+            {
+                playLabel.Background = Brushes.LightGray;
+            }
         }
 
         private void pausePlayer(object sender, RoutedEventArgs e)
@@ -345,7 +396,7 @@ namespace vkMusic
 
         private void media_MediaEnded(object sender, RoutedEventArgs e)
         {
-
+            nextSong(null,null);
         }
 
         private void media_GiveFeedback(object sender, GiveFeedbackEventArgs e)
@@ -357,6 +408,44 @@ namespace vkMusic
         {
             media.Play();
         }
+
+        private void prevSong(object sender, RoutedEventArgs e)
+        {
+            int index = songs.IndexOf(songs.Find(x => x.url == media.Source.ToString()));
+            if (index == 0) return;
+            (gridRight.Children[index * 4 + 3] as Button).Content = "▷";
+            (gridRight.Children[index*4 + 2] as Label).Background = Brushes.LightGray;
+
+            media.Stop();
+            media.Source = new Uri(songs[--index].url);
+            media.Play();
+
+            (gridRight.Children[index * 4 + 3] as Button).Content = "◻";
+            (gridRight.Children[index * 4 + 2] as Label).Background = Brushes.LightGreen;
+        }
+
+        private void nextSong(object sender, RoutedEventArgs e)
+        {
+
+            int index = songs.IndexOf(songs.Find(x => x.url == media.Source.ToString()));
+            if (index >= songs.Count - 1) return;
+            (gridRight.Children[index * 4 + 3] as Button).Content = "▷";
+
+            (gridRight.Children[index * 4 + 2] as Label).Background = Brushes.LightGray;
+
+            media.Stop();
+            media.Source = new Uri(songs[++index].url);
+            media.Play();
+
+            (gridRight.Children[index * 4 + 3] as Button).Content = "◻";
+
+            (gridRight.Children[index * 4 + 2] as Label).Background = Brushes.LightGreen;
+
+
+        }
+
+        
+        
         #endregion
     }
 }
