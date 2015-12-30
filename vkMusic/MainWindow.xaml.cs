@@ -29,7 +29,16 @@ namespace vkMusic
             Initializemy();
         }
 
-        
+
+        private void Initializemy()
+        {
+            myWebClient = new WebClient();
+            myWebClient.DownloadFileCompleted += myWebClient_DownloadFileCompleted;
+            myWebClient.DownloadProgressChanged += myWebClient_DownloadProgressChanged;
+            scrollViewer.ScrollChanged += OnScrollChanged;
+            login_Click(null, null);
+        }
+
         #region loginRegion
         waiting w;
         private void login_Click(object sender, RoutedEventArgs e)
@@ -41,29 +50,33 @@ namespace vkMusic
         }
         private void browser_LoadCompleted(object sender, NavigationEventArgs e)
         {
-            string userId,token;
+            string userId, token;
 
-            if (Core.browserParser(browser.Source.ToString(), out token , out userId)) authSuccess(true,token,userId);
-            
-            else authSuccess(false,null,null);
+            if (Core.browserParser(browser.Source.ToString(), out token, out userId)) authSuccess(true, token, userId);
+
+            else authSuccess(false, null, null);
 
         }
 
-        private void loadFriendsToList() {
+        private void loadFriendsToList()
+        {
             List<Friend> friends = new List<Friend>();
             friends = Core.getFriendList(data.Default.userId);
-            foreach (Friend f in friends) {
-                friendsCombo.Items.Add(string.Format("{0} - {1} {2}",f.id,f.name,f.surname));
+            foreach (Friend f in friends)
+            {
+                friendsCombo.Items.Add(string.Format("{0} - {1} {2}", f.id, f.name, f.surname));
             }
         }
 
-        private void authSuccess(bool auth, string t,string i) {
+        private void authSuccess(bool auth, string t, string i)
+        {
             try { w.Close(); }
             catch { }
-            if (auth) { 
+            if (auth)
+            {
                 //действия при удачной аутентификации
-                loginStatusTxt.Text = string.Format("Вход выполнен({0})",Core.nameById(i));
-               // loginBtn.Content = "Выход";
+                loginStatusTxt.Text = string.Format("Вход выполнен({0})", Core.nameById(i));
+                // loginBtn.Content = "Выход";
                 browser.Visibility = Visibility.Collapsed;
                 data.Default.token = t;
                 data.Default.userId = i;
@@ -72,46 +85,51 @@ namespace vkMusic
                 loadFriendsToList();
                 showSong.IsEnabled = true;
                 friendsCombo.IsEnabled = true;
-            
+                showSongs(null, null);
             }
 
             else
             {
                 loginStatusTxt.Text = "Выполните вход в свой аккаунт";
-                
                 data.Default.auth = false;
-
-
             }
         }
         #endregion
 
-
         #region songsRegion
         List<Song> songs = new List<Song>();
+        int counter = 0;
         private void showSongs(object sender, RoutedEventArgs e)
         {
-            getSongs(data.Default.userId);
-        }
-
-        private void getSongs(string id) {
-            string all;
-            data.Default.currentId=id;
-            songs = Core.getMusic(id, data.Default.currentOffset, data.Default.count, out all);
-            songsCountLbl.Content = string.Format("Песни: {0} - {1} из {2}",data.Default.currentOffset, data.Default.currentOffset + data.Default.count,all);
+            songs = getSongs(data.Default.userId);
+            data.Default.count = songs.Count;
             generateSongInView(songs);
-
         }
 
-        private void generateSongInView(List<Song> songs)
+        private List<Song> getSongs(string id)
         {
-            int counter = 0;
+            string all;
+            data.Default.currentId = id;
+            List<Song> songsList = Core.getMusic(id, data.Default.currentOffset, data.Default.count, out all);
+            songsCountLbl.Content = string.Format("Песни: 1 - {0} из {1}", data.Default.currentOffset + data.Default.count, all);
+            return songsList;
+        }
+
+        private void generateSongInView(List<Song> songsList)
+        {
+
             gridRight.ShowGridLines = true;
             gridRight.Children.Clear();
-            gridRight.RowDefinitions.Clear();
 
-            if (songs==null) return;
-            foreach (Song s in songs)
+            if (songsList == null) return;
+
+            addSongsToView(songsList);
+        }
+
+        private void addSongsToView(List<Song> songsList)
+        {
+            if (songsList == null) return;
+            foreach (Song s in songsList)
             {
 
                 Button btn = new Button();
@@ -120,14 +138,17 @@ namespace vkMusic
                 Label lbl = new Label();
 
                 lbl.Content = string.Format("{0} - {1}", s.Artist, s.Name);
+                lbl.Tag = s.LyricsId;
+                lbl.MouseDoubleClick += lbl_MouseDoubleClick;
+                if(s.LyricsExist)lbl.Foreground = new SolidColorBrush(Color.FromRgb(0,50,150));
 
                 btnPlay.Tag = s.url;
                 btnPlay.Click += btnPlay_Click;
                 btnPlay.Content = "▷";
                 btnPlay.FontSize = 20;
-                            
 
-                
+
+
                 btn.Content = "Скачать";
                 btn.ToolTip = string.Format("{2}\\{0} - {1}.mp3", s.Artist, s.Name, data.Default.path);
 
@@ -136,25 +157,25 @@ namespace vkMusic
 
                 btn.Click += btn_Click;
                 btn.Tag = s;
-                
+
                 btnBuff.Click += btnBuff_Click;
                 btnBuff.Tag = s;
 
-               
+
 
                 RowDefinition r = new RowDefinition();
                 r.Height = new GridLength(30);
 
                 btn.SetValue(Grid.RowProperty, counter);
                 btnBuff.SetValue(Grid.RowProperty, counter);
-                lbl.SetValue(Grid.RowProperty, counter);
                 btnPlay.SetValue(Grid.RowProperty, counter);
+                lbl.SetValue(Grid.RowProperty, counter);
 
 
                 btn.SetValue(Grid.ColumnProperty, 0);
                 btnBuff.SetValue(Grid.ColumnProperty, 1);
-                lbl.SetValue(Grid.ColumnProperty, 2);
-                btnPlay.SetValue(Grid.ColumnProperty, 3);
+                btnPlay.SetValue(Grid.ColumnProperty, 2);
+                lbl.SetValue(Grid.ColumnProperty, 3);
 
                 gridRight.RowDefinitions.Add(r);
 
@@ -162,17 +183,13 @@ namespace vkMusic
 
                 gridRight.Children.Add(btn);
                 gridRight.Children.Add(btnBuff);
-                gridRight.Children.Add(lbl);
                 gridRight.Children.Add(btnPlay);
-                
-
+                gridRight.Children.Add(lbl);
 
                 counter++;
 
             }
-
         }
-        
 
         void btnPlay_Click(object sender, RoutedEventArgs e)
         {
@@ -181,15 +198,15 @@ namespace vkMusic
 
             for (int i = 0; i < songs.Count; i++)
             {
-                playButtons.Add(gridRight.Children[i * 4 + 3] as Button);
-                playLabels.Add(gridRight.Children[i * 4 + 2] as Label);
+                playButtons.Add(gridRight.Children[i * 4 + 2] as Button);
+                playLabels.Add(gridRight.Children[i * 4 + 3] as Label);
             }
             int indexofButton = 0;
 
             if ((sender as Button).Content.ToString() == "▷")
             {
 
-                
+
 
                 foreach (Button playButton in playButtons)
                 {
@@ -216,7 +233,7 @@ namespace vkMusic
 
             else {
                 media.Stop();
-                
+
                 (sender as Button).Content = "▷";
                 foreach (Label playLabel in playLabels)
                 {
@@ -229,8 +246,16 @@ namespace vkMusic
 
         void lbl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            
-
+            Label lbl = sender as Label;
+            if (lbl.Tag.ToString() != String.Empty)
+            {
+                TextViewer.Visibility = Visibility.Visible;
+                TextLabel.Content = Core.getLyric(lbl.Tag.ToString());
+            }
+            else
+            {
+                TextViewer.Visibility = Visibility.Hidden;
+            }
         }
 
         private void btnBuff_Click(object sender, RoutedEventArgs e)
@@ -239,21 +264,22 @@ namespace vkMusic
             Song s = current.Tag as Song;
 
             Clipboard.SetData(DataFormats.Text, s.url);
-           // MessageBox.Show("Ссылка скопирована");
-           
+            // MessageBox.Show("Ссылка скопирована");
+
         }
 
-       
-       
+
+
         void btn_Click(object sender, RoutedEventArgs e)
         {
-            if (data.Default.path == string.Empty) {
+            if (data.Default.path == string.Empty)
+            {
                 MessageBox.Show("Выберите папку для загрузки!");
                 return;
             }
             //добавление в список загрузок при клике на кнопку
-            Button current=(Button) sender;
-            Song s=current.Tag as Song;
+            Button current = (Button)sender;
+            Song s = current.Tag as Song;
 
             string file = string.Format("{2}\\{0} - {1}.mp3", s.Artist, s.Name, data.Default.path);
             file = file.Replace('"', '_');
@@ -266,10 +292,9 @@ namespace vkMusic
                 listDownloads.Items.Add(i.name.Split('-')[1]);
             }
         }
-        
+
         private void friendsCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             getSongs((sender as ComboBox).SelectedItem.ToString().Split(' ')[0]);
         }
 
@@ -285,23 +310,33 @@ namespace vkMusic
             getSongs(data.Default.currentId);
 
         }
-        #endregion
 
-        #region downloader
 
-        private void Initializemy()
+
+        private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            myWebClient = new WebClient();
-            myWebClient.DownloadFileCompleted += myWebClient_DownloadFileCompleted;
-            myWebClient.DownloadProgressChanged += myWebClient_DownloadProgressChanged;
+
+            if (scrollViewer.VerticalOffset == scrollViewer.ScrollableHeight && scrollViewer.VerticalOffset > 0)
+            {
+                data.Default.currentOffset += data.Default.count;
+                var currentSongs = getSongs(data.Default.currentId);
+                songs.AddRange(currentSongs);
+                addSongsToView(currentSongs);
+            }
+
         }
 
+        #endregion
+
+
+
+        #region downloader
         private void myWebClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             if (e.Error != null) MessageBox.Show(e.Error.ToString());
             downloadList.RemoveAt(0);
             downloadProcess();
-           // statusTxt.Text = "";
+            // statusTxt.Text = "";
             statusProgress.Value = 0;
 
             listDownloads.Items.Clear();
@@ -343,7 +378,7 @@ namespace vkMusic
 
         #endregion
 
-        #region payer
+        #region player
         private void folderBtn_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog sv = new System.Windows.Forms.FolderBrowserDialog();
@@ -356,13 +391,13 @@ namespace vkMusic
 
         private void media_BufferingStarted(object sender, RoutedEventArgs e)
         {
-           
+
 
         }
 
         private void media_BufferingEnded(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         private void stopPlayer(object sender, RoutedEventArgs e)
@@ -373,8 +408,8 @@ namespace vkMusic
 
             for (int i = 0; i < songs.Count; i++)
             {
-                playButtons.Add(gridRight.Children[i * 4 + 3] as Button);
-                playLabels.Add(gridRight.Children[i * 4 + 2] as Label);
+                playButtons.Add(gridRight.Children[i * 4 + 2] as Button);
+                playLabels.Add(gridRight.Children[i * 4 + 3] as Label);
             }
 
             foreach (Button playButton in playButtons)
@@ -391,12 +426,12 @@ namespace vkMusic
         private void pausePlayer(object sender, RoutedEventArgs e)
         {
             media.Pause();
-            
+
         }
 
         private void media_MediaEnded(object sender, RoutedEventArgs e)
         {
-            nextSong(null,null);
+            nextSong(null, null);
         }
 
         private void media_GiveFeedback(object sender, GiveFeedbackEventArgs e)
@@ -413,39 +448,46 @@ namespace vkMusic
         {
             int index = songs.IndexOf(songs.Find(x => x.url == media.Source.ToString()));
             if (index == 0) return;
-            (gridRight.Children[index * 4 + 3] as Button).Content = "▷";
-            (gridRight.Children[index*4 + 2] as Label).Background = Brushes.LightGray;
+            (gridRight.Children[index * 4 + 2] as Button).Content = "▷";
+            (gridRight.Children[index * 4 + 3] as Label).Background = Brushes.LightGray;
 
             media.Stop();
             media.Source = new Uri(songs[--index].url);
             media.Play();
 
-            (gridRight.Children[index * 4 + 3] as Button).Content = "◻";
-            (gridRight.Children[index * 4 + 2] as Label).Background = Brushes.LightGreen;
+            (gridRight.Children[index * 4 + 2] as Button).Content = "◻";
+            (gridRight.Children[index * 4 + 3] as Label).Background = Brushes.LightGreen;
         }
 
         private void nextSong(object sender, RoutedEventArgs e)
         {
 
             int index = songs.IndexOf(songs.Find(x => x.url == media.Source.ToString()));
-            if (index >= songs.Count - 1) return;
-            (gridRight.Children[index * 4 + 3] as Button).Content = "▷";
+            if (index >= songs.Count - 1)
+            {
+                data.Default.currentOffset += data.Default.count;
+                var currentSongs = getSongs(data.Default.currentId);
+                songs.AddRange(currentSongs);
+                addSongsToView(currentSongs);
+            }
 
-            (gridRight.Children[index * 4 + 2] as Label).Background = Brushes.LightGray;
+            (gridRight.Children[index * 4 + 2] as Button).Content = "▷";
+
+            (gridRight.Children[index * 4 + 3] as Label).Background = Brushes.LightGray;
 
             media.Stop();
             media.Source = new Uri(songs[++index].url);
             media.Play();
 
-            (gridRight.Children[index * 4 + 3] as Button).Content = "◻";
+            (gridRight.Children[index * 4 + 2] as Button).Content = "◻";
 
-            (gridRight.Children[index * 4 + 2] as Label).Background = Brushes.LightGreen;
+            (gridRight.Children[index * 4 + 3] as Label).Background = Brushes.LightGreen;
 
 
         }
 
-        
-        
+
+
         #endregion
     }
 }

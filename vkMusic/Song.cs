@@ -8,17 +8,10 @@ namespace vkMusic
 {
     class Song
     {
-        public Song() { }
-
-        public Song(string a, string n, string u)
-        {
-            Artist = a;
-            Name = n;
-            url = u;
-        }
-
         public string Artist { get; set; }
         public string Name { get; set; }
         public string url { get; set; }
+        public string LyricsId { get; set; }
+        public bool LyricsExist => LyricsId != String.Empty;
     }
 }
